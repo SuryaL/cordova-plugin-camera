@@ -35,6 +35,7 @@
 #endif
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
+#define CDV_PHOTO_CUSTOM_PREFIX @"custom_cdv_photo_"
 
 static NSSet* org_apache_cordova_validArrowDirections;
 
@@ -333,6 +334,41 @@ static NSString* toBase64(NSData* data) {
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)cleanupCustom:(CDVInvokedUrlCommand*)command
+{
+    // empty the tmp directory
+    NSFileManager* fileMgr = [[NSFileManager alloc] init];
+    NSError* err = nil;
+    BOOL hasErrors = NO;
+    
+    // clear contents of NSTemporaryDirectory
+    NSString* tempDirectoryPath = NSTemporaryDirectory();
+    NSDirectoryEnumerator* directoryEnumerator = [fileMgr enumeratorAtPath:tempDirectoryPath];
+    NSString* fileName = nil;
+    BOOL result;
+    
+    while ((fileName = [directoryEnumerator nextObject])) {
+        // only delete the files we created
+        if (![fileName hasPrefix:CDV_PHOTO_CUSTOM_PREFIX]) {
+            continue;
+        }
+        NSString* filePath = [tempDirectoryPath stringByAppendingPathComponent:fileName];
+        result = [fileMgr removeItemAtPath:filePath error:&err];
+        if (!result && err) {
+            NSLog(@"Failed to delete: %@ (error: %@)", filePath, err);
+            hasErrors = YES;
+        }
+    }
+    
+    CDVPluginResult* pluginResult;
+    if (hasErrors) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:@"One or more files failed to be deleted."];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)popoverControllerDidDismissPopover:(id)popoverController
 {
     UIPopoverController* pc = (UIPopoverController*)popoverController;
@@ -400,7 +436,7 @@ static NSString* toBase64(NSData* data) {
     // generate unique file name
     int i = 1;
     do {
-        filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, extension];
+        filePath = [NSString stringWithFormat:@"%@/%@%lf.%@", docsPath, CDV_PHOTO_CUSTOM_PREFIX, [[NSDate date] timeIntervalSince1970], extension];
     } while ([fileMgr fileExistsAtPath:filePath]);
     
     return filePath;

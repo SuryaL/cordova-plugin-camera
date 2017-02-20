@@ -182,4 +182,8 @@ cameraExport.cleanup = function(successCallback, errorCallback) {
     exec(successCallback, errorCallback, "Camera", "cleanup", []);
 };
 
+cameraExport.cleanupCustom = function(successCallback, errorCallback) {
+    exec(successCallback, errorCallback, "Camera", "cleanupCustom", []);
+};
+
 module.exports = cameraExport;
