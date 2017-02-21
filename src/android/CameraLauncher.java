@@ -368,7 +368,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             intent.setType("image/*");
             if (this.allowEdit) {
                 intent.setAction(Intent.ACTION_PICK);
-                intent.putExtra("crop", "true");
+                intent.putExtra("crop", "false");
                 if (targetWidth > 0) {
                     intent.putExtra("outputX", targetWidth);
                 }
@@ -1048,7 +1048,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
             // Load in the smallest bitmap possible that is closest to the size we want
             options.inJustDecodeBounds = false;
-            options.inSampleSize = calculateSampleSize(rotatedWidth, rotatedHeight,  widthHeight[0], widthHeight[1]);
+            options.inSampleSize = 1;//calculateSampleSize(rotatedWidth, rotatedHeight,  widthHeight[0], widthHeight[1]);
             Bitmap unscaledBitmap = null;
             try {
                 fileStream = FileHelper.getInputStreamFromUriString(galleryUri.toString(), cordova);
@@ -1137,8 +1137,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         }
 
         int[] retval = new int[2];
-        retval[0] = newWidth;
-        retval[1] = newHeight;
+//        retval[0] = newWidth;
+//        retval[1] = newHeight;
+        retval[0] = origWidth;
+        retval[1] = origHeight;
         return retval;
     }
 
