@@ -531,7 +531,7 @@ static NSString* toBase64(NSData* data) {
                                                                   options:phOptions
                                                             resultHandler:^(NSData* _Nullable imageData, NSString* _Nullable dataUTI, UIImageOrientation orientation, NSDictionary* _Nullable info) {
                                                             if (imageData) {
-                                                                if (options.correctOrientation) {
+                                                                if (options.correctOrientation && orientation == UIImageOrientationUp) {
                                                                     UIImage *image = [UIImage imageWithData:imageData];
                                                                     image = [self fixrotation:image];
                                                                     imageData = UIImageJPEGRepresentation(image, 1);
@@ -562,7 +562,7 @@ static NSString* toBase64(NSData* data) {
                                                                                   options:phOptions
                                                                             resultHandler:^(NSData* _Nullable imageData, NSString* _Nullable dataUTI, UIImageOrientation orientation, NSDictionary* _Nullable info) {
                                                                                 if (imageData) {
-                                                                                    if (options.correctOrientation) {
+                                                                                    if (options.correctOrientation && orientation == UIImageOrientationUp) {
                                                                                         UIImage *image = [UIImage imageWithData:imageData];
                                                                                         image = [self fixrotation:image];
                                                                                         imageData = UIImageJPEGRepresentation(image, 1);
