@@ -510,8 +510,6 @@ static NSString* toBase64(NSData* data) {
             NSString* extension = options.encodingType == EncodingTypePNG? @"png" : @"jpg";
             NSString* filePath = [self tempFilePath:extension];
             
-                        image = [self retrieveImage:info options:options];
-            
             PHImageRequestOptions* phOptions = [PHImageRequestOptions new];
             phOptions.synchronous = YES;
             phOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -533,6 +531,12 @@ static NSString* toBase64(NSData* data) {
                                                                   options:phOptions
                                                             resultHandler:^(NSData* _Nullable imageData, NSString* _Nullable dataUTI, UIImageOrientation orientation, NSDictionary* _Nullable info) {
                                                             if (imageData) {
+                                                                if (options.correctOrientation) {
+                                                                    UIImage *image = [UIImage imageWithData:imageData];
+                                                                    image = [self fixrotation:image];
+                                                                    imageData = UIImageJPEGRepresentation(image, 1);
+                                                                }
+                                                                
                                                                 NSError* err = nil;
                                                                 if ([imageData writeToFile:filePath
                                                                         options:NSAtomicWrite
@@ -558,6 +562,12 @@ static NSString* toBase64(NSData* data) {
                                                                                   options:phOptions
                                                                             resultHandler:^(NSData* _Nullable imageData, NSString* _Nullable dataUTI, UIImageOrientation orientation, NSDictionary* _Nullable info) {
                                                                                 if (imageData) {
+                                                                                    if (options.correctOrientation) {
+                                                                                        UIImage *image = [UIImage imageWithData:imageData];
+                                                                                        image = [self fixrotation:image];
+                                                                                        imageData = UIImageJPEGRepresentation(image, 1);
+                                                                                    }
+                                                                                    
                                                                                     NSError* err = nil;
                                                                                     if ([imageData writeToFile:filePath
                                                                                                        options:NSAtomicWrite
